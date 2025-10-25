@@ -8,65 +8,98 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy, Link as LinkIcon } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Landmark, ArrowRightLeft, Award } from 'lucide-react';
+import { OraIcon, InrIcon } from '@/lib/data.tsx';
 import Link from 'next/link';
 
 export default function DashboardPage() {
-  const { toast } = useToast();
-  const [oraAddress] = useState('ORALNXKWCAZ');
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(oraAddress);
-    toast({
-      title: 'Address Copied',
-      description: 'ORA address has been copied to your clipboard.',
-    });
-  };
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Your INR Balance</CardTitle>
+            <div className="flex items-center gap-2">
+              <Landmark className="h-6 w-6" />
+              <CardTitle>Add Money</CardTitle>
+            </div>
+            <CardDescription>
+              Add money to your wallet using UPI, debit/credit card, or net banking.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold">₹0.00</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Your ORA Balance</CardTitle>
-            <LinkIcon className="h-5 w-5 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold">0</div>
-            <p className="text-sm text-muted-foreground">ORA Coins</p>
+            <Button>Add Money</Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Your ORA Address</CardTitle>
-            <CardDescription>
-              Share this address to receive ORA coins.
-            </CardDescription>
+            <CardTitle>Convert</CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center justify-between">
-            <span className="font-mono text-lg">{oraAddress}</span>
-            <Button variant="ghost" size="icon" onClick={copyToClipboard}>
-              <Copy className="h-5 w-5" />
-              <span className="sr-only">Copy Address</span>
-            </Button>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <div className="grid gap-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="from-amount">From</Label>
+                  <span className="text-sm text-muted-foreground">
+                    Available balance: 90
+                  </span>
+                </div>
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <OraIcon className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <Input
+                    id="from-amount"
+                    type="number"
+                    placeholder="0"
+                    className="pl-10 pr-16"
+                    defaultValue="0"
+                  />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                    <span className="font-semibold">ORA</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-center">
+                <Button variant="ghost" size="icon">
+                  <ArrowRightLeft className="h-4 w-4" />
+                </Button>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="to-amount">To</Label>
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <InrIcon className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <Input
+                    id="to-amount"
+                    type="number"
+                    placeholder="--"
+                    className="pl-10 pr-16"
+                    readOnly
+                  />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                    <span className="font-semibold">INR</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="text-center text-sm text-muted-foreground">
+              1,000 ORA ≈ ₹1
+            </div>
+            <Button className="w-full">Convert ORA to INR</Button>
           </CardContent>
         </Card>
       </div>
-      <div className="fixed bottom-0 left-0 right-0 border-t bg-background p-4 md:hidden">
-        <Link href="/add-money" passHref>
-          <Button className="w-full">Add Money</Button>
+      <div className="mt-4 flex items-center justify-center">
+        <Link href="/rewards" className="flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+          <Award className="h-4 w-4" />
+          Earn Rewards
         </Link>
       </div>
     </div>

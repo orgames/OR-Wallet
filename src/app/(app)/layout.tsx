@@ -42,8 +42,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/add-money', label: 'Add Money', icon: Landmark },
-    { href: '/convert', label: 'Convert', icon: CandlestickChart },
     { href: '/rewards', label: 'Earn Rewards', icon: Award },
     { href: '/api-keys', label: 'API Keys', icon: KeyRound },
   ];
