@@ -3,14 +3,13 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Landmark, ArrowRightLeft, Award, Copy, Wallet } from 'lucide-react';
+import { ArrowRightLeft, Award, Copy, Wallet } from 'lucide-react';
 import { OraIcon, InrIcon } from '@/lib/data.tsx';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
@@ -58,21 +57,6 @@ export default function DashboardPage() {
                 <Copy className="h-4 w-4" />
               </Button>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Landmark className="h-6 w-6" />
-              <CardTitle>Add Money</CardTitle>
-            </div>
-            <CardDescription>
-              Add money to your wallet using UPI, debit/credit card, or net banking.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button>Add Money</Button>
           </CardContent>
         </Card>
 

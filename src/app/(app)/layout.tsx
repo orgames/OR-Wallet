@@ -19,8 +19,7 @@ import {
   LayoutDashboard,
   KeyRound,
   ChevronUp,
-  Landmark,
-  CandlestickChart,
+  Send,
   Award,
 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -42,6 +41,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/send-money', label: 'Send Money', icon: Send },
     { href: '/rewards', label: 'Earn Rewards', icon: Award },
     { href: '/api-keys', label: 'API Keys', icon: KeyRound },
   ];
