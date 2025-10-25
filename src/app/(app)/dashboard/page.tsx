@@ -67,14 +67,6 @@ export default function DashboardPage() {
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       <div className="flex items-center">
         <h1 className="text-lg font-semibold md:text-2xl">Dashboard</h1>
-        <div className="ml-auto flex items-center gap-2">
-          <Link href="/add-funds">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Funds
-            </Button>
-          </Link>
-        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">

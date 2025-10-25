@@ -18,7 +18,6 @@ import {
   Wallet,
   LayoutDashboard,
   Send,
-  ArrowDownLeft,
   ArrowRightLeft,
   ChevronUp,
 } from 'lucide-react';
@@ -42,7 +41,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/send', label: 'Send', icon: Send },
-    { href: '/add-funds', label: 'Add Funds', icon: ArrowDownLeft },
     { href: '/convert', label: 'Convert', icon: ArrowRightLeft },
   ];
 
