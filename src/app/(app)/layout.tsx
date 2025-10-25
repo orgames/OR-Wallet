@@ -20,10 +20,10 @@ import {
   Send,
   Award,
   LogOut,
-  ChevronDown,
   ArrowRightLeft,
   Upload,
 } from 'lucide-react';
+import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -49,13 +49,13 @@ import { useAuth, useUser, useFirestore, useFirebaseApp } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, updateDoc } from 'firebase/firestore';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar');
-  const { user, loading, error } = useUser();
+  const { user, loading, error, reload } = useUser();
   const router = useRouter();
   const auth = useAuth();
   const firestore = useFirestore();
@@ -64,6 +64,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -81,10 +82,30 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
+
+  const resetDialog = () => {
+    setSelectedFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl(null);
+    if(fileInputRef.current) {
+        fileInputRef.current.value = "";
+    }
+  }
+
+  const handleDialogStateChange = (open: boolean) => {
+    setIsProfileDialogOpen(open);
+    if (!open) {
+      resetDialog();
+    }
+  }
 
   const handleUpload = async () => {
     if (!selectedFile || !user || !app) return;
@@ -97,17 +118,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       const snapshot = await uploadBytes(storageRef, selectedFile);
       const downloadURL = await getDownloadURL(snapshot.ref);
 
-      const userDocRef = doc(firestore, 'users', user.uid);
-      await updateDoc(userDocRef, {
-        photoURL: downloadURL,
-      });
+      if (firestore) {
+          const userDocRef = doc(firestore, 'users', user.uid);
+          await updateDoc(userDocRef, {
+            photoURL: downloadURL,
+          });
+      }
+
+      // Manually trigger a refresh of the user object to get the new photoURL
+      await user.reload();
+      // Call the reload function from the useUser hook to update the state
+      reload();
+
 
       toast({
         title: 'Success',
         description: 'Profile picture updated successfully.',
       });
-      setIsProfileDialogOpen(false);
-      setSelectedFile(null);
+      handleDialogStateChange(false);
     } catch (error) {
       console.error("Error uploading file:", error);
       toast({
@@ -232,7 +260,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
         <SidebarInset>{children}</SidebarInset>
       </div>
-      <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
+      <Dialog open={isProfileDialogOpen} onOpenChange={handleDialogStateChange}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Upload Profile Picture</DialogTitle>
@@ -254,12 +282,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 accept="image/*"
               />
             </div>
-            {selectedFile && (
-                <div className="flex items-center gap-4 pl-[25%]">
-                    <p className="text-sm text-muted-foreground truncate">
-                        {selectedFile.name}
-                    </p>
-                </div>
+             {previewUrl && (
+              <div className="col-span-4 flex justify-center">
+                <Image
+                  src={previewUrl}
+                  alt="Profile preview"
+                  width={128}
+                  height={128}
+                  className="h-32 w-32 rounded-full object-cover"
+                />
+              </div>
             )}
           </div>
           <DialogFooter>

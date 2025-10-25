@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { useAuth } from '../provider';
 
@@ -9,6 +9,11 @@ export function useUser() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [key, setKey] = useState(0); // Add a key to force re-render
+
+  const reload = useCallback(() => {
+    setKey(prevKey => prevKey + 1);
+  }, []);
 
   useEffect(() => {
     if (!auth) {
@@ -29,7 +34,7 @@ export function useUser() {
     );
 
     return () => unsubscribe();
-  }, [auth]);
+  }, [auth, key]);
 
-  return { user, loading, error };
+  return { user, loading, error, reload };
 }
