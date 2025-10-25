@@ -39,10 +39,10 @@ export default function SendMoneyPage() {
   const selectedCoin = currencies.find((c) => c.code === selectedCurrency);
   
   const handleSaveDetails = () => {
-    // Logic to save details would go here
+    // Logic to save details and initiate transfer would go here
     toast({
-      title: 'Details Saved',
-      description: 'The recipient\'s bank details have been saved for future use.',
+      title: 'Transfer Initiated',
+      description: 'The money has been sent successfully.',
     });
     setIsDialogOpen(false);
   };
@@ -114,7 +114,7 @@ export default function SendMoneyPage() {
             <DialogTrigger asChild>
               <Button className="w-full">
                 <Send className="mr-2 h-4 w-4" />
-                Send
+                Proceed to Send
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
@@ -153,7 +153,10 @@ export default function SendMoneyPage() {
                   </Select>
                 </div>
               </div>
-              <Button onClick={handleSaveDetails} type="submit" className="w-full">Save Details</Button>
+              <Button onClick={handleSaveDetails} type="submit" className="w-full">
+                <Send className="mr-2 h-4 w-4" />
+                Send
+              </Button>
             </DialogContent>
           </Dialog>
 
