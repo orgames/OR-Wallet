@@ -15,40 +15,20 @@ import { OraIcon, InrIcon, currencies, bankNames } from '@/lib/data.tsx';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { useUser, useDoc, useFirestore } from '@/firebase';
+import { doc } from 'firebase/firestore';
+
 
 export default function DashboardPage() {
   const { toast } = useToast();
-  const [walletAddress, setWalletAddress] = useState('');
-  const [selectedCurrency, setSelectedCurrency] = useState('ORA');
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { user, loading: userLoading } = useUser();
+  const firestore = useFirestore();
 
-  useEffect(() => {
-    const generateWalletAddress = () => {
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      let result = 'ora_';
-      for (let i = 0; i < 34; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-      }
-      return result;
-    };
-    setWalletAddress(generateWalletAddress());
-  }, []);
+  const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
+  const { data: userProfile, loading: profileLoading } = useDoc(userDocRef);
 
+  const walletAddress = userProfile?.walletAddress || '';
+  
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({
@@ -56,17 +36,8 @@ export default function DashboardPage() {
       description: 'The wallet address has been copied.',
     });
   };
-  
-  const handleSaveDetails = () => {
-    // Logic to save details and initiate transfer would go here
-    toast({
-      title: 'Transfer Initiated',
-      description: 'The money has been sent successfully.',
-    });
-    setIsDialogOpen(false);
-  };
 
-  const selectedCoin = currencies.find((c) => c.code === selectedCurrency);
+  const loading = userLoading || profileLoading;
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -82,10 +53,14 @@ export default function DashboardPage() {
             <CardContent>
                 <Label htmlFor="wallet-address">Your unique ORA address</Label>
                 <div className="flex items-center gap-2">
-                <Input id="wallet-address" readOnly value={walletAddress} className="flex-grow font-mono text-xs" />
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copyToClipboard(walletAddress)}>
-                    <Copy className="h-4 w-4" />
-                </Button>
+                  {loading ? (
+                    <div className="h-10 flex-grow rounded-md bg-muted animate-pulse" />
+                  ) : (
+                    <Input id="wallet-address" readOnly value={walletAddress} className="flex-grow font-mono text-xs" />
+                  )}
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copyToClipboard(walletAddress)} disabled={loading}>
+                      <Copy className="h-4 w-4" />
+                  </Button>
                 </div>
             </CardContent>
             </Card>
