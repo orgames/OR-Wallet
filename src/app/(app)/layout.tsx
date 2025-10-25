@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import Image from 'next/image';
 import {
   SidebarProvider,
   Sidebar,
@@ -12,16 +11,17 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
 import {
   Wallet,
   LayoutDashboard,
   KeyRound,
-  ChevronUp,
   Send,
   Award,
   LogOut,
+  ChevronDown,
 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -35,9 +35,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth, useUser } from '@/firebase';
-import { getAuth, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import { useEffect } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -46,13 +45,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const auth = useAuth();
 
-
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
     }
   }, [user, loading, router]);
-
 
   const handleLogout = async () => {
     if (auth) {
@@ -85,7 +82,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <SidebarHeader className="border-b border-sidebar-border">
           <div className="flex items-center gap-2 p-2">
-            <Button variant="ghost" size="icon" className="text-sidebar-foreground h-8 w-8">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-sidebar-foreground"
+            >
               <Wallet className="h-5 w-5" />
             </Button>
             <h1 className="text-lg font-semibold text-sidebar-foreground">
@@ -111,35 +112,50 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter className="border-t border-sidebar-border p-2">
+          {/* Footer content can go here if needed */}
+        </SidebarFooter>
+      </Sidebar>
+      <div className="flex min-h-svh flex-1 flex-col">
+        <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:justify-end sm:px-6">
+          <SidebarTrigger className="sm:hidden" />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="flex h-auto w-full items-center justify-between p-2"
+                className="relative flex h-8 w-8 items-center gap-2 rounded-full"
               >
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
-                    {user.photoURL ? (
-                      <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />
-                    ) : (
-                      userAvatar && <AvatarImage src={userAvatar.imageUrl} alt={user.displayName || ''} data-ai-hint={userAvatar.imageHint} />
-                    )}
-                    <AvatarFallback>{user.displayName ? user.displayName.charAt(0) : 'U'}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col items-start text-sm">
-                    <span className="font-medium text-sidebar-foreground">
-                      {user.displayName}
-                    </span>
-                    <span className="text-xs text-sidebar-foreground/70">
-                      {user.email}
-                    </span>
-                  </div>
-                </div>
-                <ChevronUp className="h-4 w-4 text-sidebar-foreground/70" />
+                <Avatar className="h-8 w-8">
+                  {user.photoURL ? (
+                    <AvatarImage
+                      src={user.photoURL}
+                      alt={user.displayName || 'User'}
+                    />
+                  ) : (
+                    userAvatar && (
+                      <AvatarImage
+                        src={userAvatar.imageUrl}
+                        alt={user.displayName || ''}
+                        data-ai-hint={userAvatar.imageHint}
+                      />
+                    )
+                  )}
+                  <AvatarFallback>
+                    {user.displayName ? user.displayName.charAt(0) : 'U'}
+                  </AvatarFallback>
+                </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 mb-2" side="top" align="start">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {user.displayName}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Billing</DropdownMenuItem>
@@ -151,9 +167,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset>{children}</SidebarInset>
+        </header>
+        <SidebarInset>{children}</SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }
