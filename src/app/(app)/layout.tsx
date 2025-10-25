@@ -17,8 +17,7 @@ import {
 import {
   Wallet,
   LayoutDashboard,
-  Send,
-  ArrowRightLeft,
+  KeyRound,
   ChevronUp,
 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -40,8 +39,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/send', label: 'Send', icon: Send },
-    { href: '/convert', label: 'Convert', icon: ArrowRightLeft },
+    { href: '/api-keys', label: 'API Keys', icon: KeyRound },
   ];
 
   return (
@@ -53,7 +51,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <Wallet className="h-5 w-5" />
             </Button>
             <h1 className="text-lg font-semibold text-sidebar-foreground">
-              OR wallet
+              OR Wallet
             </h1>
           </div>
         </SidebarHeader>
