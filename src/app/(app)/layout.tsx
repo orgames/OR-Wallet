@@ -21,11 +21,22 @@ import {
   Award,
   LogOut,
   ChevronDown,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Upload,
 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,9 +45,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useAuth, useUser } from '@/firebase';
+import { useAuth, useUser, useFirestore, useFirebaseApp } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useEffect } from 'react';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { doc, updateDoc } from 'firebase/firestore';
+import { useEffect, useState, useRef } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -44,6 +58,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, error } = useUser();
   const router = useRouter();
   const auth = useAuth();
+  const firestore = useFirestore();
+  const app = useFirebaseApp();
+  const { toast } = useToast();
+
+  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -57,6 +79,47 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       router.push('/login');
     }
   };
+  
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile || !user || !app) return;
+
+    setIsUploading(true);
+    const storage = getStorage(app);
+    const storageRef = ref(storage, `profile-pictures/${user.uid}/${selectedFile.name}`);
+
+    try {
+      const snapshot = await uploadBytes(storageRef, selectedFile);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      const userDocRef = doc(firestore, 'users', user.uid);
+      await updateDoc(userDocRef, {
+        photoURL: downloadURL,
+      });
+
+      toast({
+        title: 'Success',
+        description: 'Profile picture updated successfully.',
+      });
+      setIsProfileDialogOpen(false);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: 'There was an error uploading your profile picture.',
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -139,7 +202,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     )
                   )}
                   <AvatarFallback>
-                    {user.displayName ? user.displayName.charAt(0) : 'U'}
+                    {user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -156,7 +219,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setIsProfileDialogOpen(true)}>
+                Profile
+              </DropdownMenuItem>
               <DropdownMenuItem>Billing</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -169,6 +234,47 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
         <SidebarInset>{children}</SidebarInset>
       </div>
+      <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Profile Picture</DialogTitle>
+            <DialogDescription>
+              Select an image file to set as your new profile picture.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="picture" className="text-right">
+                Picture
+              </Label>
+              <Input
+                id="picture"
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="col-span-3"
+                accept="image/*"
+              />
+            </div>
+            {selectedFile && (
+                <div className="flex items-center gap-4 pl-[25%]">
+                    <p className="text-sm text-muted-foreground truncate">
+                        {selectedFile.name}
+                    </p>
+                </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={handleUpload}
+              disabled={!selectedFile || isUploading}
+            >
+              {isUploading ? 'Uploading...' : 'Upload'}
+               <Upload className="ml-2 h-4 w-4" />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 }
