@@ -41,7 +41,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar');
 
   const navItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/add-money', label: 'Add Money', icon: Landmark },
     { href: '/convert', label: 'Convert', icon: CandlestickChart },
     { href: '/rewards', label: 'Earn Rewards', icon: Award },

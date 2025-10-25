@@ -1,5 +1,10 @@
-import { redirect } from 'next/navigation'
+import AppLayout from './(app)/layout';
+import Page from './(app)/page';
 
 export default function Home() {
-  redirect('/dashboard')
+  return (
+    <AppLayout>
+      <Page />
+    </AppLayout>
+  );
 }
