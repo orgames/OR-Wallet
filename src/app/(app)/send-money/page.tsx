@@ -63,7 +63,7 @@ export default function SendMoneyPage() {
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {currencies.map((currency) => (
+              {currencies.filter(c => ['ORA', 'INR'].includes(c.code)).map((currency) => (
                 <Card key={currency.code}>
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium">{currency.name}</CardTitle>
