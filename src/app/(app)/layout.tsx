@@ -17,11 +17,11 @@ import {
 import {
   Wallet,
   LayoutDashboard,
-  KeyRound,
   Send,
   Award,
   LogOut,
   ChevronDown,
+  ArrowRightLeft
 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -62,8 +62,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/send-money', label: 'Send Money', icon: Send },
     { href: '/rewards', label: 'Earn Rewards', icon: Award },
-    { href: '/api-keys', label: 'API Keys', icon: KeyRound },
-    { href: '/convert', label: 'Convert', icon: Award },
+    { href: '/convert', label: 'Convert', icon: ArrowRightLeft },
   ];
 
   if (loading || !user) {
