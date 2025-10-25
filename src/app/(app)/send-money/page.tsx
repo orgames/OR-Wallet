@@ -17,34 +17,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose
-} from '@/components/ui/dialog';
-import { Send, X } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { currencies, bankNames } from '@/lib/data.tsx';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SendMoneyPage() {
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0].code);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const selectedCoin = currencies.find((c) => c.code === selectedCurrency);
   
-  const handleSaveDetails = () => {
+  const handleSendMoney = () => {
     // Logic to save details and initiate transfer would go here
     toast({
       title: 'Transfer Initiated',
       description: 'The money has been sent successfully.',
     });
-    setIsDialogOpen(false);
   };
 
 
@@ -57,7 +46,7 @@ export default function SendMoneyPage() {
             <CardTitle>Send Money</CardTitle>
           </div>
           <CardDescription>
-            Send funds to another wallet.
+            Send funds to a bank account.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -78,8 +67,31 @@ export default function SendMoneyPage() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="recipient-address">Recipient Address</Label>
-              <Input id="recipient-address" placeholder="Enter recipient's ORA address" />
+                <Label htmlFor="account-holder-name">Account Holder Name</Label>
+                <Input id="account-holder-name" placeholder="Enter account holder's name" />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="account-number">Account Number</Label>
+                <Input id="account-number" placeholder="Enter account number" />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="ifsc-code">IFSC Code</Label>
+                <Input id="ifsc-code" placeholder="Enter IFSC code" />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="bank-name">Bank Name</Label>
+                <Select>
+                    <SelectTrigger id="bank-name">
+                        <SelectValue placeholder="Select a bank" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {bankNames.map((bank) => (
+                            <SelectItem key={bank} value={bank}>
+                                {bank}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
 
             <div className="flex items-end gap-4">
@@ -110,56 +122,10 @@ export default function SendMoneyPage() {
             )}
           </div>
           
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="w-full">
-                <Send className="mr-2 h-4 w-4" />
-                Proceed to Send
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Add Bank Details</DialogTitle>
-                <DialogDescription>
-                  Enter the recipient&apos;s bank details to send Ora Coins. These details will be saved for future use.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="account-holder-name">Account Holder Name</Label>
-                  <Input id="account-holder-name" defaultValue="John Doe" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="account-number">Account Number</Label>
-                  <Input id="account-number" defaultValue="1234567890" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="ifsc-code">IFSC Code</Label>
-                  <Input id="ifsc-code" defaultValue="SBIN0001234" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="bank-name">Bank Name</Label>
-                   <Select>
-                      <SelectTrigger id="bank-name">
-                          <SelectValue placeholder="Select a bank" />
-                      </SelectTrigger>
-                      <SelectContent>
-                          {bankNames.map((bank) => (
-                              <SelectItem key={bank} value={bank}>
-                                  {bank}
-                              </SelectItem>
-                          ))}
-                      </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <Button onClick={handleSaveDetails} type="submit" className="w-full">
-                <Send className="mr-2 h-4 w-4" />
-                Send
-              </Button>
-            </DialogContent>
-          </Dialog>
-
+          <Button className="w-full" onClick={handleSendMoney}>
+            <Send className="mr-2 h-4 w-4" />
+            Send Money
+          </Button>
         </CardContent>
       </Card>
     </div>
