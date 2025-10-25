@@ -34,7 +34,7 @@ import {
 export default function DashboardPage() {
   const { toast } = useToast();
   const [walletAddress, setWalletAddress] = useState('');
-  const [selectedCurrency, setSelectedCurrency] = useState(currencies[0].code);
+  const [selectedCurrency, setSelectedCurrency] = useState('ORA');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -196,7 +196,7 @@ export default function DashboardPage() {
                             <SelectValue placeholder="Select" />
                         </SelectTrigger>
                         <SelectContent>
-                            {currencies.map((currency) => (
+                            {currencies.filter(c => ['ORA', 'INR'].includes(c.code)).map((currency) => (
                             <SelectItem key={currency.code} value={currency.code}>
                                 {currency.code}
                             </SelectItem>
