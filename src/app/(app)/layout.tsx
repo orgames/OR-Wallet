@@ -49,7 +49,7 @@ import { useAuth, useUser, useFirestore, useFirebaseApp } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, updateDoc } from 'firebase/firestore';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -126,7 +126,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       }
 
       // Manually trigger a refresh of the user object to get the new photoURL
-      await user.reload();
+      if (user.reload) {
+        await user.reload();
+      }
       // Call the reload function from the useUser hook to update the state
       reload();
 
