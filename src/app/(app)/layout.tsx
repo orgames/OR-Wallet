@@ -55,7 +55,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <Wallet className="h-5 w-5" />
             </Button>
             <h1 className="text-lg font-semibold text-sidebar-foreground">
-              Global Wallet
+              OR wallet
             </h1>
           </div>
         </SidebarHeader>

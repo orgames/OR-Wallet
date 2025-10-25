@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Global Wallet',
+  title: 'OR wallet',
   description: 'Your secure and easy-to-use digital wallet.',
 };
 
