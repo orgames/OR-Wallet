@@ -1,29 +1,33 @@
 'use client';
 
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth, useFirestore, useUser } from '@/firebase';
-import { Wallet, Chrome } from 'lucide-react';
-import { useEffect } from 'react';
-
-const generateWalletAddress = () => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = 'ora_';
-  for (let i = 0; i < 34; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-};
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { useAuth, useUser } from '@/firebase';
+import { Wallet } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 
 export default function LoginPage() {
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const { user, loading } = useUser();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!loading && user) {
@@ -33,31 +37,17 @@ export default function LoginPage() {
 
 
   const handleSignIn = async () => {
-    if (!auth || !firestore) return;
-    const provider = new GoogleAuthProvider();
+    if (!auth) return;
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      // Check if user document already exists
-      const userDocRef = doc(firestore, 'users', user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (!userDocSnap.exists()) {
-        // New user, create a document
-        await setDoc(userDocRef, {
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          createdAt: serverTimestamp(),
-          walletAddress: generateWalletAddress(),
-        });
-      }
-      
+      await signInWithEmailAndPassword(auth, email, password);
       router.push('/');
-
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error during sign-in:', error);
+      toast({
+        variant: "destructive",
+        title: "Sign-in Failed",
+        description: error.message || "Invalid email or password.",
+      });
     }
   };
 
@@ -82,11 +72,31 @@ export default function LoginPage() {
           <CardTitle>Welcome to OR Wallet</CardTitle>
           <CardDescription>Sign in to access your secure digital wallet.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Button className="w-full" onClick={handleSignIn}>
-            <Chrome className="mr-2 h-4 w-4" />
-            Sign in with Google
-          </Button>
+        <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input 
+                id="password" 
+                type="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button className="w-full" onClick={handleSignIn}>
+              Sign In
+            </Button>
         </CardContent>
       </Card>
     </div>
