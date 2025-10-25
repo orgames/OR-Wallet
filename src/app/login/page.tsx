@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-} from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,16 +10,27 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useAuth, useUser } from '@/firebase';
+import { useAuth, useUser, useFirestore } from '@/firebase';
 import { Wallet } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+
+const generateWalletAddress = () => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = 'ora_';
+  for (let i = 0; i < 40; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
 
 
 export default function LoginPage() {
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const { user, loading } = useUser();
   const [email, setEmail] = useState('');
@@ -37,9 +45,24 @@ export default function LoginPage() {
 
 
   const handleSignIn = async () => {
-    if (!auth) return;
+    if (!auth || !firestore) return;
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const loggedInUser = userCredential.user;
+
+      // Check if user profile exists, if not, create one
+      const userDocRef = doc(firestore, "users", loggedInUser.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
+          email: loggedInUser.email,
+          displayName: loggedInUser.displayName || email.split('@')[0],
+          photoURL: loggedInUser.photoURL || '',
+          walletAddress: generateWalletAddress(),
+        });
+      }
+
       router.push('/');
     } catch (error: any) {
       console.error('Error during sign-in:', error);

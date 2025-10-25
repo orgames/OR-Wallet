@@ -10,10 +10,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowRightLeft, Award, Copy, Wallet, Send } from 'lucide-react';
-import { OraIcon, InrIcon, currencies, bankNames } from '@/lib/data.tsx';
-import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { ArrowRightLeft, Copy, Wallet, Send } from 'lucide-react';
+import { OraIcon, InrIcon, currencies } from '@/lib/data.tsx';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -30,6 +28,7 @@ export default function DashboardPage() {
   const walletAddress = userProfile?.walletAddress || '';
   
   const copyToClipboard = (text: string) => {
+    if (!text) return;
     navigator.clipboard.writeText(text);
     toast({
       title: 'Copied to Clipboard',
@@ -54,11 +53,11 @@ export default function DashboardPage() {
                 <Label htmlFor="wallet-address">Your unique ORA address</Label>
                 <div className="flex items-center gap-2">
                   {loading ? (
-                    <div className="h-10 flex-grow rounded-md bg-muted animate-pulse" />
+                    <div className="h-10 flex-grow animate-pulse rounded-md bg-muted" />
                   ) : (
                     <Input id="wallet-address" readOnly value={walletAddress} className="flex-grow font-mono text-xs" />
                   )}
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copyToClipboard(walletAddress)} disabled={loading}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copyToClipboard(walletAddress)} disabled={loading || !walletAddress}>
                       <Copy className="h-4 w-4" />
                   </Button>
                 </div>
