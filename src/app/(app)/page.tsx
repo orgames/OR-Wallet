@@ -178,98 +178,9 @@ export default function DashboardPage() {
                         </Card>
                     ))}
                     </div>
-                    
-                    <div className="space-y-2">
-                    <Label htmlFor="recipient-address-home">Recipient Address</Label>
-                    <Input id="recipient-address-home" placeholder="Enter recipient's ORA address" />
-                    </div>
-
-                    <div className="flex items-end gap-4">
-                    <div className="flex-1 space-y-2">
-                        <Label htmlFor="amount-home">Amount</Label>
-                        <Input id="amount-home" type="number" placeholder="0.00" />
-                    </div>
-                    <div className="w-[120px] space-y-2">
-                        <Label htmlFor="currency-home">Currency</Label>
-                        <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-                        <SelectTrigger id="currency-home">
-                            <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {currencies.filter(c => ['ORA', 'INR'].includes(c.code)).map((currency) => (
-                            <SelectItem key={currency.code} value={currency.code}>
-                                {currency.code}
-                            </SelectItem>
-                            ))}
-                        </SelectContent>
-                        </Select>
-                    </div>
-                    </div>
-                    {selectedCoin && (
-                    <div className="text-sm text-muted-foreground">
-                        Available: {selectedCoin.balance.toLocaleString()} {selectedCoin.code}
-                    </div>
-                    )}
                 </div>
-                
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                    <Button className="w-full">
-                        <Send className="mr-2 h-4 w-4" />
-                        Proceed to Send
-                    </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Add Bank Details</DialogTitle>
-                        <DialogDescription>
-                        Enter the recipient&apos;s bank details to send Ora Coins. These details will be saved for future use.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="space-y-2">
-                        <Label htmlFor="account-holder-name-home">Account Holder Name</Label>
-                        <Input id="account-holder-name-home" defaultValue="John Doe" />
-                        </div>
-                        <div className="space-y-2">
-                        <Label htmlFor="account-number-home">Account Number</Label>
-                        <Input id="account-number-home" defaultValue="1234567890" />
-                        </div>
-                        <div className="space-y-2">
-                        <Label htmlFor="ifsc-code-home">IFSC Code</Label>
-                        <Input id="ifsc-code-home" defaultValue="SBIN0001234" />
-                        </div>
-                        <div className="space-y-2">
-                        <Label htmlFor="bank-name-home">Bank Name</Label>
-                        <Select>
-                            <SelectTrigger id="bank-name-home">
-                                <SelectValue placeholder="Select a bank" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {bankNames.map((bank) => (
-                                    <SelectItem key={bank} value={bank}>
-                                        {bank}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        </div>
-                    </div>
-                    <Button onClick={handleSaveDetails} type="submit" className="w-full">
-                        <Send className="mr-2 h-4 w-4" />
-                        Send
-                    </Button>
-                    </DialogContent>
-                </Dialog>
-
                 </CardContent>
             </Card>
-            <div className="mt-4 flex items-center justify-center">
-                <Link href="/rewards" className="flex items-center gap-2 text-sm font-medium text-primary hover:underline">
-                <Award className="h-4 w-4" />
-                Earn Rewards
-                </Link>
-            </div>
         </div>
       </div>
     </div>
