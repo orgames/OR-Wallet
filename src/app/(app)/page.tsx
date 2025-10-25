@@ -10,15 +10,57 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Landmark, ArrowRightLeft, Award } from 'lucide-react';
+import { Landmark, ArrowRightLeft, Award, Copy, Wallet } from 'lucide-react';
 import { OraIcon, InrIcon } from '@/lib/data.tsx';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function DashboardPage() {
+  const { toast } = useToast();
+  const [walletAddress, setWalletAddress] = useState('');
+
+  useEffect(() => {
+    const generateWalletAddress = () => {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = 'ora_';
+      for (let i = 0; i < 34; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      return result;
+    };
+    setWalletAddress(generateWalletAddress());
+  }, []);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: 'Copied to Clipboard',
+      description: 'The wallet address has been copied.',
+    });
+  };
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       <div className="grid gap-6">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Wallet className="h-6 w-6" />
+              <CardTitle>Your ORA Wallet</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Label htmlFor="wallet-address">Your unique ORA address</Label>
+            <div className="flex items-center gap-2">
+              <Input id="wallet-address" readOnly value={walletAddress} className="flex-grow font-mono text-xs" />
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copyToClipboard(walletAddress)}>
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -44,7 +86,7 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <Label htmlFor="from-amount">From</Label>
                   <span className="text-sm text-muted-foreground">
-                    Available balance: 90
+                    Available balance: 0
                   </span>
                 </div>
                 <div className="relative">
