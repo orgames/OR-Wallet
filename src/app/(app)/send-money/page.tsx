@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/select';
 import { Send } from 'lucide-react';
 import { currencies, bankNames } from '@/lib/data.tsx';
-import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SendMoneyPage() {
@@ -50,21 +49,6 @@ export default function SendMoneyPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {currencies.filter(c => ['ORA', 'INR'].includes(c.code)).map((currency) => (
-                <Card key={currency.code}>
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">{currency.name}</CardTitle>
-                    <currency.icon className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{currency.balance.toLocaleString()} {currency.code}</div>
-                    <p className="text-xs text-muted-foreground">Available Balance</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-            
             <div className="space-y-2">
                 <Label htmlFor="account-holder-name">Account Holder Name</Label>
                 <Input id="account-holder-name" placeholder="Enter account holder's name" />
