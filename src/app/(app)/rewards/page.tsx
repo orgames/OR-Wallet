@@ -7,7 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Award } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Award, Video } from 'lucide-react';
 
 export default function RewardsPage() {
   return (
@@ -22,8 +23,12 @@ export default function RewardsPage() {
             Discover opportunities to earn more rewards.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <p>Reward opportunities will be displayed here.</p>
+        <CardContent className="flex flex-col items-start gap-4">
+            <p>Watch videos to earn ORA coins.</p>
+            <Button>
+              <Video className="mr-2 h-4 w-4" />
+              Watch and Earn
+            </Button>
         </CardContent>
       </Card>
     </div>
