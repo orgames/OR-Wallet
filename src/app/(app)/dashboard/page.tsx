@@ -8,9 +8,10 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { History, Send, Copy, Link as LinkIcon } from 'lucide-react';
+import { Copy, Link as LinkIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const { toast } = useToast();
@@ -30,24 +31,9 @@ export default function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle>Your INR Balance</CardTitle>
-            <CardDescription>Available to withdraw</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-4xl font-bold">₹0.00</div>
-              </div>
-              <div className="flex gap-2">
-                <Button>
-                  <Send className="mr-2 h-4 w-4" />
-                  Send
-                </Button>
-                <Button variant="secondary">
-                  <History className="mr-2 h-4 w-4" />
-                  History
-                </Button>
-              </div>
-            </div>
+            <div className="text-4xl font-bold">₹0.00</div>
           </CardContent>
         </Card>
 
@@ -79,7 +65,9 @@ export default function DashboardPage() {
         </Card>
       </div>
       <div className="fixed bottom-0 left-0 right-0 border-t bg-background p-4 md:hidden">
-        <Button className="w-full">Add Money</Button>
+        <Link href="/add-money" passHref>
+          <Button className="w-full">Add Money</Button>
+        </Link>
       </div>
     </div>
   );

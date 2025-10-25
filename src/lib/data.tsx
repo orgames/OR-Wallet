@@ -32,11 +32,11 @@ const EurIcon = (props: React.ComponentProps<'svg'>) => (
   <svg {...props} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M15,15.5C15,18.5 12.5,21 9.5,21C6,21 4,18 4,18V16.5H6V18C6,18 7.5,19.5 9.5,19.5C11.5,19.5 13,18 13,15.5C13,13.5 12,12.5 10,12V11.5C12,11 13,10 13,8C13,6 11,4.5 9,4.5C7.5,4.5 6,5.5 6,5.5V7H4V6C4,6 5.5,3 9,3C12,3 15,5 15,8C15,10.5 13.5,11.5 12,12.5C13,13.5 15,14 15,15.5M20,6H18V17H20V6Z" /></svg>
 );
 
-const InrIcon = (props: React.ComponentProps<'svg'>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 3h8v2H8zM8 19h8v2H8zM16 5.76V5h- tradizionale.5l-3.5 6h-1l-3-4H5.5v2H7l3 4-4 7h2.5l3.5-6h1l4 7H18v-2h-1.5l-3-5.5z"/></svg>
+export const InrIcon = (props: React.ComponentProps<'svg'>) => (
+    <svg {...props} viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M7 20v-16"></path><path d="M17 5v14"></path><path d="M7 12h10"></path></svg>
 );
 
-const OraIcon = (props: React.ComponentProps<'svg'>) => (
+export const OraIcon = (props: React.ComponentProps<'svg'>) => (
     <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
 );
 

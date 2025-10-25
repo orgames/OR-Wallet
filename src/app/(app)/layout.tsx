@@ -19,6 +19,9 @@ import {
   LayoutDashboard,
   KeyRound,
   ChevronUp,
+  Landmark,
+  CandlestickChart,
+  Award,
 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { user } from '@/lib/data.tsx';
@@ -39,6 +42,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/add-money', label: 'Add Money', icon: Landmark },
+    { href: '/convert', label: 'Convert', icon: CandlestickChart },
+    { href: '/rewards', label: 'Earn Rewards', icon: Award },
     { href: '/api-keys', label: 'API Keys', icon: KeyRound },
   ];
 
