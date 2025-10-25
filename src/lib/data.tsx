@@ -42,23 +42,15 @@ export const OraIcon = (props: React.ComponentProps<'svg'>) => (
 
 
 export const currencies: Currency[] = [
-  { code: 'USD', name: 'US Dollar', symbol: '$', balance: 50250.75, icon: UsdIcon },
-  { code: 'BTC', name: 'Bitcoin', symbol: '₿', balance: 1.5832, icon: BtcIcon },
-  { code: 'EUR', name: 'Euro', symbol: '€', balance: 12840.10, icon: EurIcon },
-  { code: 'ETH', name: 'Ethereum', symbol: 'Ξ', balance: 25.6, icon: EthIcon },
-  { code: 'INR', name: 'Indian Rupee', symbol: '₹', balance: 0.00, icon: InrIcon },
-  { code: 'ORA', name: 'ORA Coin', symbol: 'ORA', balance: 90, icon: OraIcon },
+  { code: 'USD', name: 'US Dollar', symbol: '$', balance: 0, icon: UsdIcon },
+  { code: 'BTC', name: 'Bitcoin', symbol: '₿', balance: 0, icon: BtcIcon },
+  { code: 'EUR', name: 'Euro', symbol: '€', balance: 0, icon: EurIcon },
+  { code: 'ETH', name: 'Ethereum', symbol: 'Ξ', balance: 0, icon: EthIcon },
+  { code: 'INR', name: 'Indian Rupee', symbol: '₹', balance: 0, icon: InrIcon },
+  { code: 'ORA', name: 'ORA Coin', symbol: 'ORA', balance: 0, icon: OraIcon },
 ];
 
-export const transactions: Transaction[] = [
-  { id: 'txn1', date: '2024-07-29', description: 'Received from john.eth', amount: 2.1, currency: 'ETH', type: 'received', status: 'Completed' },
-  { id: 'txn2', date: '2024-07-29', description: 'Sent to 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', amount: 0.5, currency: 'BTC', type: 'sent', status: 'Completed' },
-  { id: 'txn3', date: '2024-07-28', description: 'Stripe Deposit', amount: 1200.00, currency: 'USD', type: 'deposit', status: 'Completed' },
-  { id: 'txn4', date: '2024-07-27', description: 'Converted to EUR', amount: 500, currency: 'USD', type: 'conversion', status: 'Completed' },
-  { id: 'txn5', date: '2024-07-26', description: 'Pending transfer to jane.doe', amount: 150.00, currency: 'EUR', type: 'sent', status: 'Pending' },
-  { id: 'txn6', date: '2024-07-25', description: 'Coinbase Pro deposit', amount: 0.1, currency: 'BTC', type: 'deposit', status: 'Completed' },
-  { id: 'txn7', date: '2024-07-24', description: 'Failed transaction', amount: 10.0, currency: 'ETH', type: 'sent', status: 'Failed' },
-];
+export const transactions: Transaction[] = [];
 
 export const user = {
     name: 'Alex Doe',

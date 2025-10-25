@@ -51,15 +51,7 @@ const generateApiKey = () => {
 
 export default function ApiKeysPage() {
   const { toast } = useToast();
-  const [apiKeys, setApiKeys] = useState<ApiKey[]>([
-    {
-      key: generateApiKey(),
-      label: 'My First Key',
-      active: true,
-      createdAt: 'Jul 30, 2024',
-      lastUsed: 'Jul 31, 2024',
-    },
-  ]);
+  const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
 
   const handleGenerateKey = () => {
     const newKey: ApiKey = {
@@ -115,7 +107,15 @@ export default function ApiKeysPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {apiKeys.map((apiKey) => (
+          {apiKeys.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8 text-center">
+                <p className="text-muted-foreground">You don&apos;t have any API keys yet.</p>
+                <Button onClick={handleGenerateKey}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Generate New Key
+                </Button>
+            </div>
+          ) : apiKeys.map((apiKey) => (
             <div key={apiKey.key} className="flex flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex-grow space-y-2">
                 <div className="flex items-center gap-2">

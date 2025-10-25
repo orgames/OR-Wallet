@@ -43,7 +43,7 @@ export default function DashboardPage() {
             <LinkIcon className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold">90</div>
+            <div className="text-4xl font-bold">0</div>
             <p className="text-sm text-muted-foreground">ORA Coins</p>
           </CardContent>
         </Card>

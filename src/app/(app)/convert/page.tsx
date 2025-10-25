@@ -26,7 +26,7 @@ export default function ConvertPage() {
               <div className="flex items-center justify-between">
                 <Label htmlFor="from-amount">From</Label>
                 <span className="text-sm text-muted-foreground">
-                  Available balance: 90
+                  Available balance: 0
                 </span>
               </div>
               <div className="relative">
