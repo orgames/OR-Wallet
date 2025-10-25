@@ -14,7 +14,17 @@ import { ArrowRightLeft, Copy, Wallet, Send } from 'lucide-react';
 import { OraIcon, InrIcon, currencies } from '@/lib/data.tsx';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useDoc, useFirestore } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
+import { useEffect } from 'react';
+
+const generateWalletAddress = () => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = 'ora_';
+  for (let i = 0; i < 40; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
 
 
 export default function DashboardPage() {
@@ -24,6 +34,20 @@ export default function DashboardPage() {
 
   const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
   const { data: userProfile, loading: profileLoading } = useDoc(userDocRef);
+
+  // This effect will create a user profile if it doesn't exist.
+  useEffect(() => {
+    if (firestore && user && !profileLoading && !userProfile) {
+      const newUserProfile = {
+        email: user.email,
+        displayName: user.displayName || user.email?.split('@')[0],
+        photoURL: user.photoURL || '',
+        walletAddress: generateWalletAddress(),
+      };
+      // No await here, fire-and-forget is fine as the useDoc hook will update the UI
+      setDoc(userDocRef, newUserProfile);
+    }
+  }, [firestore, user, userDocRef, profileLoading, userProfile]);
 
   const walletAddress = userProfile?.walletAddress || '';
   
