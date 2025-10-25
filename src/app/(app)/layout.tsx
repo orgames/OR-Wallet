@@ -222,8 +222,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <DropdownMenuItem onSelect={() => setIsProfileDialogOpen(true)}>
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
