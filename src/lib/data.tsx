@@ -56,3 +56,16 @@ export const user = {
     name: 'Alex Doe',
     email: 'alex.doe@example.com'
 };
+
+export const bankNames = [
+    'State Bank of India',
+    'HDFC Bank',
+    'ICICI Bank',
+    'Punjab National Bank',
+    'Axis Bank',
+    'Bank of Baroda',
+    'Canara Bank',
+    'Union Bank of India',
+    'Kotak Mahindra Bank',
+    'IndusInd Bank',
+];
