@@ -23,10 +23,9 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SendMoneyPage() {
-  const [selectedCurrency, setSelectedCurrency] = useState(currencies[0].code);
   const { toast } = useToast();
 
-  const selectedCoin = currencies.find((c) => c.code === selectedCurrency);
+  const inrCoin = currencies.find((c) => c.code === 'INR');
   
   const handleSendMoney = () => {
     // Logic to save details and initiate transfer would go here
@@ -94,30 +93,13 @@ export default function SendMoneyPage() {
                 </Select>
             </div>
 
-            <div className="flex items-end gap-4">
-              <div className="flex-1 space-y-2">
-                <Label htmlFor="amount">Amount</Label>
-                <Input id="amount" type="number" placeholder="0.00" />
-              </div>
-              <div className="w-[120px] space-y-2">
-                <Label htmlFor="currency">Currency</Label>
-                <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-                  <SelectTrigger id="currency">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {currencies.map((currency) => (
-                      <SelectItem key={currency.code} value={currency.code}>
-                        {currency.code}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="amount">Amount (INR)</Label>
+              <Input id="amount" type="number" placeholder="0.00" />
             </div>
-            {selectedCoin && (
+            {inrCoin && (
               <div className="text-sm text-muted-foreground">
-                Available: {selectedCoin.balance.toLocaleString()} {selectedCoin.code}
+                Available: {inrCoin.balance.toLocaleString()} INR
               </div>
             )}
           </div>
