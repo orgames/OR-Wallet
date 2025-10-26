@@ -18,14 +18,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Send } from 'lucide-react';
-import { currencies, bankNames } from '@/lib/data.tsx';
+import { bankNames } from '@/lib/data.tsx';
 import { useToast } from '@/hooks/use-toast';
+import { useUser, useDoc, useFirestore } from '@/firebase';
+import { doc } from 'firebase/firestore';
+
 
 export default function SendMoneyPage() {
   const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
+  const { data: userProfile } = useDoc(userDocRef);
 
-  const inrCoin = currencies.find((c) => c.code === 'INR');
-  
   const handleSendMoney = () => {
     // Logic to save details and initiate transfer would go here
     toast({
@@ -81,11 +86,9 @@ export default function SendMoneyPage() {
               <Label htmlFor="amount">Amount (INR)</Label>
               <Input id="amount" type="number" placeholder="0.00" />
             </div>
-            {inrCoin && (
-              <div className="text-sm text-muted-foreground">
-                Available: {inrCoin.balance.toLocaleString()} INR
-              </div>
-            )}
+            <div className="text-sm text-muted-foreground">
+              Available: {userProfile?.inrBalance?.toLocaleString() || 0} INR
+            </div>
           </div>
           
           <Button className="w-full" onClick={handleSendMoney}>

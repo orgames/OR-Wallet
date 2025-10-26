@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowRightLeft, Copy, Wallet, Send } from 'lucide-react';
-import { OraIcon, InrIcon, currencies } from '@/lib/data.tsx';
+import { OraIcon, InrIcon } from '@/lib/data.tsx';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useDoc, useFirestore } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
@@ -43,6 +43,8 @@ export default function DashboardPage() {
         displayName: user.displayName || user.email?.split('@')[0],
         photoURL: user.photoURL || '',
         walletAddress: generateWalletAddress(),
+        oraBalance: 1000,
+        inrBalance: 0,
       };
       // No await here, fire-and-forget is fine as the useDoc hook will update the UI
       setDoc(userDocRef, newUserProfile);
@@ -97,7 +99,7 @@ export default function DashboardPage() {
                     <div className="flex items-center justify-between">
                       <Label htmlFor="from-amount">From</Label>
                       <span className="text-sm text-muted-foreground">
-                        Available balance: 0
+                        Available balance: {loading ? '...' : (userProfile?.oraBalance?.toLocaleString() ?? 0)}
                       </span>
                     </div>
                     <div className="relative">
@@ -110,6 +112,7 @@ export default function DashboardPage() {
                         placeholder="0"
                         className="pl-10 pr-16"
                         defaultValue="0"
+                        disabled={loading}
                       />
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                         <span className="font-semibold">ORA</span>
@@ -145,7 +148,7 @@ export default function DashboardPage() {
                 <div className="text-center text-sm text-muted-foreground">
                   1,000 ORA ≈ ₹1
                 </div>
-                <Button className="w-full">Convert ORA to INR</Button>
+                <Button className="w-full" disabled={loading}>Convert ORA to INR</Button>
               </CardContent>
             </Card>
         </div>
@@ -163,18 +166,34 @@ export default function DashboardPage() {
                 <CardContent className="space-y-6">
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {currencies.filter(c => ['ORA', 'INR'].includes(c.code)).map((currency) => (
-                        <Card key={currency.code}>
+                      <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium">{currency.name}</CardTitle>
-                            <currency.icon className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium">ORA Coin</CardTitle>
+                            <OraIcon className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{currency.balance.toLocaleString()} {currency.code}</div>
-                            <p className="text-xs text-muted-foreground">Available Balance</p>
+                          {loading ? (
+                             <div className="h-8 w-24 animate-pulse rounded-md bg-muted" />
+                          ) : (
+                            <div className="text-2xl font-bold">{(userProfile?.oraBalance ?? 0).toLocaleString()} ORA</div>
+                          )}
+                          <p className="text-xs text-muted-foreground">Available Balance</p>
                         </CardContent>
-                        </Card>
-                    ))}
+                      </Card>
+                      <Card>
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">Indian Rupee</CardTitle>
+                            <InrIcon className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                           {loading ? (
+                             <div className="h-8 w-24 animate-pulse rounded-md bg-muted" />
+                          ) : (
+                            <div className="text-2xl font-bold">{(userProfile?.inrBalance ?? 0).toLocaleString()} INR</div>
+                          )}
+                          <p className="text-xs text-muted-foreground">Available Balance</p>
+                        </CardContent>
+                      </Card>
                     </div>
                 </div>
                 </CardContent>

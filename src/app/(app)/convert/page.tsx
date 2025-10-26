@@ -12,8 +12,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowRightLeft } from 'lucide-react';
 import { OraIcon, InrIcon } from '@/lib/data.tsx';
+import { useUser, useDoc, useFirestore } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 export default function ConvertPage() {
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
+  const { data: userProfile } = useDoc(userDocRef);
+
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       <Card>
@@ -26,7 +33,7 @@ export default function ConvertPage() {
               <div className="flex items-center justify-between">
                 <Label htmlFor="from-amount">From</Label>
                 <span className="text-sm text-muted-foreground">
-                  Available balance: 0
+                  Available balance: {userProfile?.oraBalance?.toLocaleString() || 0}
                 </span>
               </div>
               <div className="relative">

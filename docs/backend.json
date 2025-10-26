@@ -20,9 +20,17 @@
         "photoURL": {
           "type": "string",
           "description": "The URL of the user's profile picture."
+        },
+        "oraBalance": {
+          "type": "number",
+          "description": "The user's ORA coin balance."
+        },
+        "inrBalance": {
+          "type": "number",
+          "description": "The user's INR balance."
         }
       },
-      "required": ["walletAddress", "email"]
+      "required": ["walletAddress", "email", "oraBalance", "inrBalance"]
     }
   },
   "auth": {

@@ -60,6 +60,8 @@ export default function LoginPage() {
           displayName: loggedInUser.displayName || email.split('@')[0],
           photoURL: loggedInUser.photoURL || '',
           walletAddress: generateWalletAddress(),
+          oraBalance: 1000,
+          inrBalance: 0,
         });
       }
 
