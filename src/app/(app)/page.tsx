@@ -10,12 +10,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowRightLeft, Copy, Wallet, Send } from 'lucide-react';
+import { ArrowRightLeft, Copy, Wallet, Send, RefreshCw } from 'lucide-react';
 import { OraIcon, InrIcon } from '@/lib/data.tsx';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useDoc, useFirestore } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
-import { useEffect } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 const generateWalletAddress = () => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -29,11 +29,52 @@ const generateWalletAddress = () => {
 
 export default function DashboardPage() {
   const { toast } = useToast();
-  const { user, loading: userLoading } = useUser();
+  const { user, loading: userLoading, reload: reloadUser } = useUser();
   const firestore = useFirestore();
 
   const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
   const { data: userProfile, loading: profileLoading } = useDoc(userDocRef);
+
+  const [captcha, setCaptcha] = useState({ num1: 0, num2: 0, answer: '' });
+  const [captchaCorrect, setCaptchaCorrect] = useState(false);
+
+  const generateCaptcha = () => {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    setCaptcha({ num1, num2, answer: '' });
+    setCaptchaCorrect(false);
+  };
+
+  useEffect(() => {
+    generateCaptcha();
+  }, []);
+  
+  const handleCaptchaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newAnswer = e.target.value;
+    setCaptcha(prev => ({ ...prev, answer: newAnswer }));
+    if (parseInt(newAnswer, 10) === captcha.num1 + captcha.num2) {
+      setCaptchaCorrect(true);
+    } else {
+      setCaptchaCorrect(false);
+    }
+  };
+
+  const handleRefresh = () => {
+    if (!captchaCorrect) {
+      toast({
+        variant: 'destructive',
+        title: 'Incorrect Answer',
+        description: 'Please solve the math problem to refresh.',
+      });
+      return;
+    }
+    reloadUser(); // This triggers a re-fetch of user data, including balances.
+    toast({
+      title: 'Balances Refreshed',
+      description: 'Your account balances are now up to date.',
+    });
+    generateCaptcha(); // Generate new captcha after successful refresh
+  };
 
   // This effect will create a user profile if it doesn't exist.
   useEffect(() => {
@@ -155,12 +196,14 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-6">
             <Card>
                 <CardHeader>
-                <div className="flex items-center gap-2">
-                    <Send className="h-6 w-6" />
-                    <CardTitle>Send Money</CardTitle>
-                </div>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Send className="h-6 w-6" />
+                      <CardTitle>Your Balances</CardTitle>
+                    </div>
+                  </div>
                 <CardDescription>
-                    Send funds to another wallet.
+                    Your current ORA and INR balances.
                 </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -194,6 +237,22 @@ export default function DashboardPage() {
                           <p className="text-xs text-muted-foreground">Available Balance</p>
                         </CardContent>
                       </Card>
+                    </div>
+                    <div className="flex items-end gap-4 rounded-md border bg-muted/50 p-4">
+                      <div className="flex-grow space-y-2">
+                        <Label htmlFor="captcha">Solve to Refresh: What is {captcha.num1} + {captcha.num2}?</Label>
+                        <Input
+                          id="captcha"
+                          type="number"
+                          value={captcha.answer}
+                          onChange={handleCaptchaChange}
+                          placeholder="Your answer"
+                        />
+                      </div>
+                      <Button onClick={handleRefresh} disabled={!captchaCorrect || loading}>
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Refresh
+                      </Button>
                     </div>
                 </div>
                 </CardContent>

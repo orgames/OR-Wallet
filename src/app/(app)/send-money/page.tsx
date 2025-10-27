@@ -87,7 +87,7 @@ export default function SendMoneyPage() {
               <Input id="amount" type="number" placeholder="0.00" />
             </div>
             <div className="text-sm text-muted-foreground">
-              Available: {userProfile?.inrBalance?.toLocaleString() || 0} INR
+              Available: {(userProfile?.inrBalance ?? 0).toLocaleString()} INR
             </div>
           </div>
           
