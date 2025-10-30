@@ -14,7 +14,7 @@ import { ArrowRightLeft, Copy, Wallet, Send, RefreshCw } from 'lucide-react';
 import { OraIcon, InrIcon } from '@/lib/data.tsx';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useDoc, useFirestore } from '@/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState, useMemo } from 'react';
 
 const generateWalletAddress = () => {
@@ -26,6 +26,7 @@ const generateWalletAddress = () => {
   return result;
 };
 
+const CONVERSION_RATE = 1000; // 1000 ORA = 1 INR
 
 export default function DashboardPage() {
   const { toast } = useToast();
@@ -37,6 +38,75 @@ export default function DashboardPage() {
 
   const [captcha, setCaptcha] = useState({ num1: 0, num2: 0, answer: '' });
   const [captchaCorrect, setCaptchaCorrect] = useState(false);
+
+  const [fromAmount, setFromAmount] = useState('');
+  const [toAmount, setToAmount] = useState('');
+  const [isConverting, setIsConverting] = useState(false);
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+     if (/^\d*\.?\d*$/.test(value)) {
+      setFromAmount(value);
+      const fromValue = parseFloat(value);
+      if (!isNaN(fromValue) && fromValue > 0) {
+        setToAmount((fromValue / CONVERSION_RATE).toFixed(2));
+      } else {
+        setToAmount('');
+      }
+    }
+  };
+
+  const handleConvert = async () => {
+    if (!userDocRef || !userProfile) return;
+
+    const oraToConvert = parseFloat(fromAmount);
+    if (isNaN(oraToConvert) || oraToConvert <= 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid Amount',
+        description: 'Please enter a valid amount to convert.',
+      });
+      return;
+    }
+
+    if (oraToConvert > (userProfile.oraBalance ?? 0)) {
+      toast({
+        variant: 'destructive',
+        title: 'Insufficient Balance',
+        description: 'You do not have enough ORA to complete this conversion.',
+      });
+      return;
+    }
+
+    setIsConverting(true);
+    const inrToAdd = oraToConvert / CONVERSION_RATE;
+    const newOraBalance = (userProfile.oraBalance ?? 0) - oraToConvert;
+    const newInrBalance = (userProfile.inrBalance ?? 0) + inrToAdd;
+
+    try {
+      await updateDoc(userDocRef, {
+        oraBalance: newOraBalance,
+        inrBalance: newInrBalance,
+      });
+
+      toast({
+        title: 'Conversion Successful',
+        description: `You have converted ${oraToConvert.toLocaleString()} ORA to ${inrToAdd.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}.`,
+      });
+      setFromAmount('');
+      setToAmount('');
+    } catch (error) {
+      console.error("Conversion failed: ", error);
+      toast({
+        variant: 'destructive',
+        title: 'Conversion Failed',
+        description: 'An error occurred while converting your funds.',
+      });
+    } finally {
+      setIsConverting(false);
+    }
+  };
+
 
   const generateCaptcha = () => {
     const num1 = Math.floor(Math.random() * 10) + 1;
@@ -138,7 +208,7 @@ export default function DashboardPage() {
                 <div className="space-y-4">
                   <div className="grid gap-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="from-amount">From</Label>
+                      <Label htmlFor="from-amount-dash">From</Label>
                       <span className="text-sm text-muted-foreground">
                         Available balance: {loading ? '...' : (userProfile?.oraBalance?.toLocaleString() ?? 0)}
                       </span>
@@ -148,12 +218,14 @@ export default function DashboardPage() {
                         <OraIcon className="h-5 w-5 text-muted-foreground" />
                       </div>
                       <Input
-                        id="from-amount"
-                        type="number"
+                        id="from-amount-dash"
+                        type="text"
+                        inputMode='decimal'
                         placeholder="0"
                         className="pl-10 pr-16"
-                        defaultValue="0"
-                        disabled={loading}
+                        value={fromAmount}
+                        onChange={handleAmountChange}
+                        disabled={loading || isConverting}
                       />
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                         <span className="font-semibold">ORA</span>
@@ -168,17 +240,18 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="grid gap-2">
-                    <Label htmlFor="to-amount">To</Label>
+                    <Label htmlFor="to-amount-dash">To</Label>
                     <div className="relative">
                       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <InrIcon className="h-5 w-5 text-muted-foreground" />
                       </div>
                       <Input
-                        id="to-amount"
-                        type="number"
-                        placeholder="--"
+                        id="to-amount-dash"
+                        type="text"
+                        placeholder="0.00"
                         className="pl-10 pr-16"
                         readOnly
+                        value={toAmount}
                       />
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                         <span className="font-semibold">INR</span>
@@ -189,7 +262,9 @@ export default function DashboardPage() {
                 <div className="text-center text-sm text-muted-foreground">
                   1,000 ORA ≈ ₹1
                 </div>
-                <Button className="w-full" disabled={loading}>Convert ORA to INR</Button>
+                <Button className="w-full" onClick={handleConvert} disabled={loading || isConverting || !fromAmount}>
+                   {isConverting ? 'Converting...' : 'Convert ORA to INR'}
+                </Button>
               </CardContent>
             </Card>
         </div>
@@ -232,7 +307,7 @@ export default function DashboardPage() {
                            {loading ? (
                              <div className="h-8 w-24 animate-pulse rounded-md bg-muted" />
                           ) : (
-                            <div className="text-2xl font-bold">{(userProfile?.inrBalance ?? 0).toLocaleString()} INR</div>
+                            <div className="text-2xl font-bold">{(userProfile?.inrBalance ?? 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</div>
                           )}
                           <p className="text-xs text-muted-foreground">Available Balance</p>
                         </CardContent>
